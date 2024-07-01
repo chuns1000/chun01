@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이름 선택하기</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap">
+    <style>
+        body {
+            font-family: 'Nanum Pen Script', cursive;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to right, #ffecd2 0%, #fcb69f 100%);
+            color: #333;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        .hidden {
+            display: none;
+        }
+        .button-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        button {
+            margin: 10px;
+            padding: 15px 30px;
+            font-size: 24px;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            background-color: #ff6f61;
+            color: white;
+            transition: transform 0.2s;
+            flex: 1 1 30%;
+            max-width: 30%;
+        }
+        button:hover {
+            transform: scale(1.1);
+        }
+        h1 {
+            font-size: 36px;
+            color: #ff6f61;
+        }
+        p {
+            font-size: 28px;
+        }
+        #countdown-timer {
+            font-weight: bold;
+            font-size: 36px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="name-selection">
+            <h1>당신의 이름을 선택해 주세요</h1>
+            <div class="button-container">
+                <button onclick="selectName('호연')">호연</button>
+                <button onclick="selectName('시우')">시우</button>
+                <button onclick="selectName('이현')">이현</button>
+            </div>
+        </div>
+
+        <div id="favorite-person-selection" class="hidden">
+            <h1>당신이 제일 좋아하는 사람을 한명 선택해주세요~</h1>
+            <div id="favorite-options" class="button-container"></div>
+        </div>
+
+        <div id="countdown" class="hidden">
+            <h1>3초만 기다려주세요</h1>
+            <p id="countdown-timer">3</p>
+        </div>
+
+        <div id="result" class="hidden">
+            <h1 id="result-message"></h1>
+        </div>
+    </div>
+
+    <!-- 인터넷에서 무료로 제공되는 오디오 파일 링크 -->
+    <audio id="background-audio" src="https://www.soundjay.com/button/sounds/button-16.mp3" loop></audio>
+    <audio id="heartbeat-audio" src="https://www.soundjay.com/button/beep-07.wav"></audio>
+    <audio id="celebration-audio" src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3"></audio>
+
+    <script>
+        let correctAnswer = '';
+
+        function selectName(name) {
+            document.getElementById('name-selection').classList.add('hidden');
+            document.getElementById('favorite-person-selection').classList.remove('hidden');
+            
+            let backgroundAudio = document.getElementById('background-audio');
+            backgroundAudio.play();
+
+            let favoriteOptions = document.getElementById('favorite-options');
+            favoriteOptions.innerHTML = '';
+
+            if (name === '호연') {
+                correctAnswer = '아빠';
+                ['아빠', '엄마', '이모', '뻥', '시우', '이현', '할', '할빠'].forEach(person => {
+                    let button = document.createElement('button');
+                    button.textContent = person;
+                    button.onclick = () => selectPerson(person);
+                    favoriteOptions.appendChild(button);
+                });
+            } else {
+                correctAnswer = '부님';
+                ['아빠', '엄마', '부님', '이모', '호연', '할', '할빠'].forEach(person => {
+                    let button = document.createElement('button');
+                    button.textContent = person;
+                    button.onclick = () => selectPerson(person);
+                    favoriteOptions.appendChild(button);
+                });
+            }
+        }
+
+        function selectPerson(person) {
+            let backgroundAudio = document.getElementById('background-audio');
+            backgroundAudio.pause();
+            backgroundAudio.currentTime = 0;
+
+            document.getElementById('favorite-person-selection').classList.add('hidden');
+            document.getElementById('countdown').classList.remove('hidden');
+            let countdownTimer = document.getElementById('countdown-timer');
+            countdownTimer.textContent = '3';
+
+            let heartbeatAudio = document.getElementById('heartbeat-audio');
+            heartbeatAudio.play();
+
+            let countdown = 3;
+            let timer = setInterval(() => {
+                countdown--;
+                countdownTimer.textContent = countdown;
+                if (countdown === 0) {
+                    clearInterval(timer);
+                    heartbeatAudio.pause();
+                    heartbeatAudio.currentTime = 0;
+                    if (person === correctAnswer) {
+                        document.getElementById('countdown').classList.add('hidden');
+                        document.getElementById('result').classList.remove('hidden');
+                        document.getElementById('result-message').textContent = '아~ 정말 잘 선택했네요~ 축하합니다. 좋은 하루 보내세요~';
+                        
+                        let celebrationAudio = document.getElementById('celebration-audio');
+                        celebrationAudio.play();
+                    } else {
+                        document.getElementById('countdown').classList.add('hidden');
+                        document.getElementById('favorite-person-selection').classList.remove('hidden');
+                        alert('아~ 솔직한 대답이 아니군요~ 다시 선택해주세요');
+                    }
+                }
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
